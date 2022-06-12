@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 9 juin 2022 04:45:24 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="model.Course" table="course" catalog="moodleclient" optimistic-lock="version">
+        <id name="idcourse" type="int">
+            <column name="idcourse" />
+            <generator class="assigned" />
+        </id>
+        <property name="name" type="string">
+            <column name="name" length="75" />
+        </property>
+        <property name="shortname" type="string">
+            <column name="shortname" length="75" />
+        </property>
+        <property name="lastaccess" type="java.lang.Integer">
+            <column name="lastaccess" />
+        </property>
+        <property name="summary" type="string">
+            <column name="summary" length="500" />
+        </property>
+        <set name="users" table="user_course" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="idcourse" not-null="true" />
+            </key>
+            <many-to-many entity-name="model.User">
+                <column name="userid" not-null="true" />
+            </many-to-many>
+        </set>
+        <set name="assignments" table="course_assignment" inverse="false" lazy="true" fetch="select">
+            <key>
+                <column name="idcourse" not-null="true" />
+            </key>
+            <many-to-many entity-name="model.Assignment">
+                <column name="idassignment" not-null="true" />
+            </many-to-many>
+        </set>
+    </class>
+</hibernate-mapping>

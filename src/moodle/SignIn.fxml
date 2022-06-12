@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="591.0" prefWidth="639.0" style="-fx-background-color: orange;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="moodle.SignInController">
+   <children>
+      <AnchorPane layoutX="28.0" layoutY="43.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="506.0" prefWidth="583.0" style="-fx-border-color: black; -fx-border-width: 2px; -fx-border-radius: 15px; -fx-background-color: white;">
+         <children>
+            <HBox layoutX="105.0" layoutY="193.0" prefHeight="37.0" prefWidth="432.0" spacing="15.0">
+               <children>
+                  <ImageView fitHeight="31.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/administrator_male_40px.png" />
+                     </image>
+                  </ImageView>
+                  <TextField fx:id="username" alignment="CENTER" prefHeight="34.0" prefWidth="300.0" promptText="username " style="-fx-border-radius: 15px; -fx-border-color: black;" />
+               </children>
+            </HBox>
+            <HBox layoutX="105.0" layoutY="277.0" prefHeight="37.0" prefWidth="432.0" spacing="15.0">
+               <children>
+                  <ImageView fitHeight="31.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/lock_100px.png" />
+                     </image>
+                  </ImageView>
+                  <PasswordField fx:id="password" alignment="CENTER" prefHeight="33.0" prefWidth="302.0" promptText="password" style="-fx-border-color: black; -fx-border-radius: 15px;" />
+               </children>
+            </HBox>
+            <JFXButton fx:id="LoginButton" layoutX="93.0" layoutY="378.0" onAction="#login" prefHeight="38.0" prefWidth="406.0" style="-fx-background-color: #0d62e1; -fx-border-radius: 15px;" text="Login" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </JFXButton>
+            <Label alignment="CENTER" layoutX="146.0" layoutY="101.0" prefHeight="58.0" prefWidth="300.0" text="Moodle Client" textFill="#5b5555">
+               <font>
+                  <Font name="System Bold" size="40.0" />
+               </font>
+            </Label>
+            <Label fx:id="error" alignment="CENTER" layoutX="172.0" layoutY="347.0" prefHeight="18.0" prefWidth="249.0" style="-fx-text-fill: red;" textFill="#e51515ec" />
+            <ImageView fitHeight="82.0" fitWidth="89.0" layoutX="251.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/Mobile-M-Icon-2-corners.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

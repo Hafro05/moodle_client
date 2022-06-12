@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 9 juin 2022 04:45:24 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="model.Assignment" table="assignment" catalog="moodleclient" optimistic-lock="version">
+        <id name="idassignment" type="int">
+            <column name="idassignment" />
+            <generator class="assigned" />
+        </id>
+        <property name="name" type="string">
+            <column name="name" />
+        </property>
+        <property name="startdate" type="java.lang.Integer">
+            <column name="startdate" />
+        </property>
+        <property name="duedate" type="java.lang.Integer">
+            <column name="duedate" />
+        </property>
+        <set name="courses" table="course_assignment" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="idassignment" not-null="true" />
+            </key>
+            <many-to-many entity-name="model.Course">
+                <column name="idcourse" not-null="true" />
+            </many-to-many>
+        </set>
+    </class>
+</hibernate-mapping>

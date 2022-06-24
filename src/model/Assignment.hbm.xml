@@ -17,6 +17,18 @@
         <property name="duedate" type="java.lang.Integer">
             <column name="duedate" />
         </property>
+        <property name="submitted" type="java.lang.Boolean">
+            <column name="submitted" />
+        </property>
+        <property name="link" type="string">
+            <column name="link" length="512" />
+        </property>
+        <property name="submission_path" type="string">
+            <column name="submission_path" length="512" />
+        </property>
+        <property name="filename" type="string">
+            <column name="filename" length="255" />
+        </property>
         <set name="courses" table="course_assignment" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="idassignment" not-null="true" />

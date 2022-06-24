@@ -13,9 +13,10 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
+import java.security.NoSuchAlgorithmException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,6 +29,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import model.User;
+import static moodle.HashPassword.generateHash;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -71,7 +73,7 @@ public class SignInController implements Initializable {
     }    
     
     @FXML
-    private void login(ActionEvent event) throws MalformedURLException, IOException{
+    private void login(ActionEvent event) throws MalformedURLException, IOException, NoSuchAlgorithmException{
         String usrname = username.getText();
         String pssword = password.getText();
         System.out.println("Login button pressed\nUsername: "+ usrname +"\nPassword: "+pssword);
@@ -87,10 +89,11 @@ public class SignInController implements Initializable {
             this.token = jsonObject.get("token").toString();
             System.out.println("token: "+token);
             error.setText("");
-            Moodle.username = usrname;
-            Moodle.password = pssword;
+            Moodle.token = token;
+            Moodle.curuser.setUsername(usrname);
+            Moodle.curuser.setPassword(generateHash(pssword,"SHA-256"));
             
-            Parent root = FXMLLoader.load(getClass().getResource("Interface.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
             Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);
@@ -109,11 +112,11 @@ public class SignInController implements Initializable {
                     User result = (User)query.uniqueResult();
                     System.out.println(result);
                     session.close();
-                    if(result.getPassword().equals(pssword)){
-                        Moodle.username = usrname;
-                        Moodle.password = pssword;
+                    if(result.getPassword().equals(generateHash(pssword,"SHA-256"))){
+                        Moodle.curuser.setUsername(usrname);
+                        Moodle.curuser.setPassword(generateHash(pssword,"SHA-256"));
 
-                        Parent root = FXMLLoader.load(getClass().getResource("Interface.fxml"));
+                        Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
                         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
                         Scene scene = new Scene(root);
                         stage.setScene(scene);
@@ -135,7 +138,9 @@ public class SignInController implements Initializable {
                       System.out.println(e.toString());
                   }
               }
-          }
+          } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(SignInController.class.getName()).log(Level.SEVERE, null, ex);
+        }
           finally {
             con.disconnect();
           }

@@ -14,7 +14,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import model.Assignment;
 import model.Course;
+import model.User;
 
 /**
  *
@@ -24,10 +26,11 @@ public class Moodle extends Application {
     
     public static String serverAdress = "http://localhost/";
     public static String adminToken = "e222a698a176dad293d7e79617a87904";
-    public static String username;
-    public static String password;
+    public static User curuser = new User();
+    public static String token = new String();
     public static int userId;
     public static List<Course> courses = new ArrayList();
+    public static List<Assignment> assignments = new ArrayList();
 
     
     @Override
@@ -38,10 +41,11 @@ public class Moodle extends Application {
         stage.setTitle("Moodle Client");
         Image image = new javafx.scene.image.Image(getClass().getResource("images/Mobile-M-Icon-2-corners.png").toExternalForm());
         stage.getIcons().add(image);
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
     }
-
+    
     /**
      * @param args the command line arguments
      */

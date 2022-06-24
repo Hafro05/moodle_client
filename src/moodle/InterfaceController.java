@@ -19,19 +19,14 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
@@ -72,7 +67,7 @@ public class InterfaceController implements Initializable {
         // TODO
         try
         {
-            URL url1 = new URL(Moodle.serverAdress+"moodle/webservice/rest/server.php?wstoken="+Moodle.adminToken+"&wsfunction=core_user_get_users_by_field&field=username&values[0]="+Moodle.username+"&moodlewsrestformat=json");
+            URL url1 = new URL(Moodle.serverAdress+"moodle/webservice/rest/server.php?wstoken="+Moodle.adminToken+"&wsfunction=core_user_get_users_by_field&field=username&values[0]="+Moodle.curuser.getUsername()+"&moodlewsrestformat=json");
             HttpURLConnection con = (HttpURLConnection) url1.openConnection();
             con.setRequestMethod("POST");
             InputStream in = new BufferedInputStream(con.getInputStream());
@@ -82,7 +77,9 @@ public class InterfaceController implements Initializable {
             JSONObject jsonObject = (JSONObject)jsonarray.get(0);
             System.out.println(jsonObject);
             username.setText(jsonObject.get("fullname").toString());
-            Moodle.userId = Integer.parseInt(jsonObject.get("id").toString());
+            Moodle.curuser.setUserid(Integer.parseInt(jsonObject.get("id").toString()));
+            Moodle.curuser.setFullname(jsonObject.get("fullname").toString());
+            //Moodle.userId = Integer.parseInt(jsonObject.get("id").toString());
             /*BufferedReader br = new BufferedReader(insr);
             String read;
             while ((read=br.readLine()) != null) {
@@ -93,16 +90,16 @@ public class InterfaceController implements Initializable {
             Session session = HibernateUtil.getSessionFactory().openSession();
             tx = session.beginTransaction();
             User cuser = new User();
-            cuser.setUserid(Moodle.userId);
-            cuser.setUsername(jsonObject.get("username").toString());
-            cuser.setFullname(jsonObject.get("fullname").toString());
-            cuser.setPassword(Moodle.password);
+            cuser.setUserid(Moodle.curuser.getUserid());
+            cuser.setUsername(Moodle.curuser.getUsername());
+            cuser.setFullname(Moodle.curuser.getFullname());
+            cuser.setPassword(Moodle.curuser.getPassword());
             System.out.println(cuser);
             session.saveOrUpdate(cuser);
             tx.commit();
             session.close();
             
-            URL url2 = new URL(Moodle.serverAdress+"moodle/webservice/rest/server.php?wstoken="+Moodle.adminToken+"&wsfunction=core_enrol_get_users_courses&userid="+Moodle.userId+"&moodlewsrestformat=json");
+            URL url2 = new URL(Moodle.serverAdress+"moodle/webservice/rest/server.php?wstoken="+Moodle.adminToken+"&wsfunction=core_enrol_get_users_courses&userid="+Moodle.curuser.getUserid()+"&moodlewsrestformat=json");
             HttpURLConnection con1 = (HttpURLConnection) url2.openConnection();
             con1.setRequestMethod("POST");
             InputStream in1 = new BufferedInputStream(con1.getInputStream());
@@ -150,32 +147,39 @@ public class InterfaceController implements Initializable {
                         InputStreamReader insr3 = new InputStreamReader(in3, "UTF-8");
                         JSONParser jsonParser3 = new JSONParser();
                         JSONArray jsonarray2 = (JSONArray)jsonParser3.parse(insr3);
-                        JSONObject jsonObject1 = (JSONObject) jsonarray2.get(1);
-                        JSONArray jsonarray3 = (JSONArray)jsonParser3.parse(jsonObject1.get("modules").toString());
-                        JSONObject jsonObject2 = (JSONObject) jsonParser3.parse(jsonarray3.get(1).toString());
-                        JSONArray jsonarray4 = (JSONArray)jsonParser3.parse(jsonObject2.get("contents").toString());
-                        JSONObject jsonObject3 = (JSONObject) jsonParser3.parse(jsonarray4.get(0).toString());
-                        System.out.println(jsonObject3.get("fileurl")+"\n"+jsonObject3.get("filename"));
-                        /*URL url4 = new URL(jsonObject3.get("fileurl").toString()+"&token="+Moodle.adminToken);
-                        HttpURLConnection con4 = (HttpURLConnection) url4.openConnection();
-                        con4.setRequestMethod("GET");
-                        InputStream in4 = new BufferedInputStream(con4.getInputStream());
-                        BufferedInputStream bis = new BufferedInputStream(in4);
-                        Path path = Paths.get("C:/Users/"+System.getProperty("user.name")+"/Desktop/MoodleClient/"+tmp1);
-                        Path createDirectories = Files.createDirectories(path);
-                        File file = new File(createDirectories.toString()+"/"+jsonObject3.get("filename").toString());
-                        if (!file.exists()) {
-                            file.createNewFile();
+                        for(int j=0;j< jsonarray2.size();j++){
+                            JSONObject jsonObject1 = (JSONObject) jsonarray2.get(j);
+                            JSONArray jsonarray3 = (JSONArray)jsonParser3.parse(jsonObject1.get("modules").toString());
+                            for(int k=0;k<jsonarray3.size();k++){
+                                JSONObject jsonObject2 = (JSONObject) jsonParser3.parse(jsonarray3.get(k).toString());
+                                JSONArray dates = (JSONArray)jsonParser3.parse(jsonObject2.get("dates").toString());
+                                if(jsonObject2.containsKey("contents") && dates.isEmpty()){
+                                    JSONArray jsonarray4 = (JSONArray)jsonParser3.parse(jsonObject2.get("contents").toString());
+                                    JSONObject jsonObject3 = (JSONObject) jsonParser3.parse(jsonarray4.get(0).toString());
+                                    System.out.println(jsonObject3.get("fileurl")+"\n"+jsonObject3.get("filename"));
+                                    URL url4 = new URL(jsonObject3.get("fileurl").toString()+"&token="+Moodle.adminToken);
+                                    HttpURLConnection con4 = (HttpURLConnection) url4.openConnection();
+                                    con4.setRequestMethod("GET");
+                                    InputStream in4 = new BufferedInputStream(con4.getInputStream());
+                                    BufferedInputStream bis = new BufferedInputStream(in4);
+                                    Path path = Paths.get("C:/Users/"+System.getProperty("user.name")+"/Desktop/MoodleClient/"+Moodle.curuser.getFullname()+"/"+tmp1);
+                                    Path createDirectories = Files.createDirectories(path);
+                                    File file = new File(createDirectories.toString()+"/"+jsonObject3.get("filename").toString());
+                                    if (!file.exists()) {
+                                        file.createNewFile();
+                                    }
+                                    try (FileOutputStream fos = new FileOutputStream(file)) {
+                                        byte[] data = new byte[1024];
+                                        int count;
+                                        while ((count = bis.read(data, 0, 1024)) != -1) {
+                                            fos.write(data, 0, count);
+                                        }
+                                        fos.flush();
+                                        fos.close();
+                                    }
+                                }
+                            }
                         }
-                        FileOutputStream fos = new FileOutputStream(file);
-                        
-                        byte[] data = new byte[1024];
-                        int count;
-                        while ((count = bis.read(data, 0, 1024)) != -1) {
-                            fos.write(data, 0, count);
-                        }
-                        fos.flush();
-                        fos.close();*/
                     }catch (MalformedURLException ex) {
                         Logger.getLogger(InterfaceController.class.getName()).log(Level.SEVERE, null, ex);
                     }catch (IOException ex) {
@@ -184,7 +188,6 @@ public class InterfaceController implements Initializable {
                         Logger.getLogger(InterfaceController.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 });
-                
                 grid.add(db[i], 1, i);
             }
             
